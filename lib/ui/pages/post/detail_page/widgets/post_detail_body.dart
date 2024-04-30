@@ -19,7 +19,7 @@ class PostDetailBody extends ConsumerWidget {
     PostDetailModel? model = ref.watch(postDetailProvider(postId));
 
     if (model == null) {
-      return CircularProgressIndicator();
+      return Center(child: CircularProgressIndicator());
     } else {
       return Padding(
         padding: const EdgeInsets.all(16.0),

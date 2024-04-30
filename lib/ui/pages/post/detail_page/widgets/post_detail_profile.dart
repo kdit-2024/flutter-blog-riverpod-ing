@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blog/_core/constants/http.dart';
 import 'package:flutter_blog/_core/constants/size.dart';
 import 'package:flutter_blog/data/models/user.dart';
 
@@ -12,7 +13,7 @@ class PostDetailProfile extends StatelessWidget {
         title: Text("${user.username}"),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(50),
-          child: Image.network("http://192.168.0.99:8080${user.imgUrl}"),
+          child: Image.network("${baseUrl + user.imgUrl}"),
         ),
         subtitle: Row(
           children: [
