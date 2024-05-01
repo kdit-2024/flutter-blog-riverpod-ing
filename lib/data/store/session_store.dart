@@ -21,6 +21,16 @@ class SessionUser {
 class SessionStore extends SessionUser {
   final mContext = navigatorKey.currentContext;
 
+  SessionStore();
+
+  void loginCheck(String path) {
+    if (isLogin) {
+      Navigator.pushNamed(mContext!, path);
+    } else {
+      Navigator.pushNamed(mContext!, Move.loginPage);
+    }
+  }
+
   Future<void> join(JoinReqDTO joinReqDTO) async {
     ResponseDTO responseDTO = await UserRepository().fetchJoin(joinReqDTO);
 
@@ -45,7 +55,10 @@ class SessionStore extends SessionUser {
       this.accessToken = accessToken;
       this.isLogin = true;
 
-      Navigator.pushNamed(mContext!, Move.postListPage);
+      Navigator.pushNamedAndRemoveUntil(
+          mContext!, Move.postWritePage, (route) => false);
+
+      //Navigator.pushNamed(mContext!, Move.postListPage);
     } else {
       ScaffoldMessenger.of(mContext!).showSnackBar(
           SnackBar(content: Text("로그인 실패 : ${responseDTO.errorMessage}")));

@@ -1,11 +1,32 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_blog/_core/constants/http.dart';
 import 'package:flutter_blog/data/dtos/paging_dto.dart';
+import 'package:flutter_blog/data/dtos/post_request.dart';
 import 'package:flutter_blog/data/dtos/response_dto.dart';
 import 'package:flutter_blog/data/models/post.dart';
 import 'package:flutter_blog/ui/pages/post/list_page/post_list_viewmodel.dart';
+import 'package:logger/logger.dart';
 
 class PostRepository {
+  Future<ResponseDTO> savePost(
+      PostSaveReqDTO reqDTO, String accessToken) async {
+    Response response = await dio.post("/api/post",
+        options: Options(headers: {"Authorization": "${accessToken}"}),
+        data: reqDTO.toJson());
+
+    ResponseDTO responseDTO = ResponseDTO.fromJson(response.data);
+
+    Logger().d(responseDTO.response);
+    Logger().d(responseDTO.response.runtimeType);
+
+    if (responseDTO.success) {
+      responseDTO.response = Post.fromJson(responseDTO.response);
+      Logger().d(responseDTO.response.runtimeType);
+    }
+
+    return responseDTO;
+  }
+
   Future<ResponseDTO> fetchPost(int postId, String accessToken) async {
     // 통신
     Response response = await dio.get("/api/post/$postId",

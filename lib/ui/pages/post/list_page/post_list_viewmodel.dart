@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blog/_core/constants/http.dart';
+import 'package:flutter_blog/_core/constants/move.dart';
 import 'package:flutter_blog/data/dtos/paging_dto.dart';
+import 'package:flutter_blog/data/dtos/post_request.dart';
 import 'package:flutter_blog/data/dtos/response_dto.dart';
 import 'package:flutter_blog/data/models/post.dart';
 import 'package:flutter_blog/data/repositories/post_repository.dart';
 import 'package:flutter_blog/data/store/session_store.dart';
 import 'package:flutter_blog/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
 // 창고 데이터
 class PostListModel {
@@ -33,6 +36,30 @@ class PostListViewModel extends StateNotifier<PostListModel?> {
     } else {
       ScaffoldMessenger.of(mContext!).showSnackBar(
           SnackBar(content: Text("게시물 보기 실패 : ${responseDTO.errorMessage}")));
+    }
+  }
+
+  Future<void> notifyAdd(PostSaveReqDTO reqDTO) async {
+    SessionUser sessionUser = ref.read(sessionProvider);
+    ResponseDTO responseDTO =
+        await PostRepository().savePost(reqDTO, sessionUser.accessToken!);
+
+    if (responseDTO.success) {
+      Post newPost = responseDTO.response;
+
+      List<Post> prevPosts = state!.posts;
+      PageDTO pageDTO = state!.page;
+
+      // DESC 넣기
+      List<Post> newPosts = [newPost, ...prevPosts];
+
+      state = PostListModel(page: pageDTO, posts: newPosts);
+
+      Navigator.pop(mContext!);
+    } else {
+      ScaffoldMessenger.of(mContext!).showSnackBar(
+        SnackBar(content: Text("게시물 작성 실패 : ${responseDTO.errorMessage}")),
+      );
     }
   }
 }
