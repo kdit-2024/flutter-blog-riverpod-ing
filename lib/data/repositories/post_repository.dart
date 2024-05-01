@@ -6,13 +6,17 @@ import 'package:flutter_blog/data/models/post.dart';
 import 'package:flutter_blog/ui/pages/post/list_page/post_list_viewmodel.dart';
 
 class PostRepository {
-  Future<ResponseDTO> fetchPost(String accessToken, int postId) async {
+  Future<ResponseDTO> fetchPost(int postId, String accessToken) async {
     // 통신
     Response response = await dio.get("/api/post/$postId",
         options: Options(headers: {"Authorization": "$accessToken"}));
 
+    print(response.data);
+
     // 응답 받은 데이터 파싱
     ResponseDTO responseDTO = ResponseDTO.fromJson(response.data);
+
+    print(responseDTO.response);
 
     if (responseDTO.success) {
       responseDTO.response = Post.fromJson(responseDTO.response);

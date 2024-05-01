@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blog/_core/constants/size.dart';
+import 'package:flutter_blog/data/store/session_store.dart';
 import 'package:flutter_blog/ui/pages/post/detail_page/post_detail_viewmodel.dart';
 import 'package:flutter_blog/ui/pages/post/detail_page/widgets/post_detail_buttons.dart';
 import 'package:flutter_blog/ui/pages/post/detail_page/widgets/post_detail_content.dart';
@@ -17,6 +18,7 @@ class PostDetailBody extends ConsumerWidget {
 
     // 매개변수가 다르면, 여러개 만들어지고, 기본적으로는 싱글톤으로 관리된다.
     PostDetailModel? model = ref.watch(postDetailProvider(postId));
+    int sessionUserId = ref.read(sessionProvider).user!.id;
 
     if (model == null) {
       return Center(child: CircularProgressIndicator());
@@ -28,7 +30,9 @@ class PostDetailBody extends ConsumerWidget {
             PostDetailTitle("${model.post.title}"),
             const SizedBox(height: largeGap),
             PostDetailProfile(model.post.user),
-            PostDetailButtons(),
+            model.post.user.id == sessionUserId
+                ? PostDetailButtons()
+                : SizedBox(),
             const Divider(),
             const SizedBox(height: largeGap),
             PostDetailContent("${model.post.content}"),

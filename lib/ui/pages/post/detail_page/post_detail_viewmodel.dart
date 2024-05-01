@@ -18,7 +18,7 @@ class PostDetailViewModel extends StateNotifier<PostDetailModel?> {
     // 통신하기
     SessionStore sessionStore = ref.read(sessionProvider);
     ResponseDTO responseDTO =
-        await PostRepository().fetchPost(sessionStore.accessToken!, postId);
+        await PostRepository().fetchPost(postId, sessionStore.accessToken!);
 
     // 상태값 갱신 (새로 new해서 넣어줘야 한다)
     state = PostDetailModel(responseDTO.response);
