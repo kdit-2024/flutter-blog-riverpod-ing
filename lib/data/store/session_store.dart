@@ -56,9 +56,7 @@ class SessionStore extends SessionUser {
       this.isLogin = true;
 
       Navigator.pushNamedAndRemoveUntil(
-          mContext!, Move.postWritePage, (route) => false);
-
-      //Navigator.pushNamed(mContext!, Move.postListPage);
+          mContext!, Move.postListPage, (route) => false);
     } else {
       ScaffoldMessenger.of(mContext!).showSnackBar(
           SnackBar(content: Text("로그인 실패 : ${responseDTO.errorMessage}")));

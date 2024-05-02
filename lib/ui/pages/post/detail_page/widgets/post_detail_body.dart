@@ -31,7 +31,7 @@ class PostDetailBody extends ConsumerWidget {
             const SizedBox(height: largeGap),
             PostDetailProfile(model.post.user),
             model.post.user.id == sessionUserId
-                ? PostDetailButtons()
+                ? PostDetailButtons(model.post.id)
                 : SizedBox(),
             const Divider(),
             const SizedBox(height: largeGap),

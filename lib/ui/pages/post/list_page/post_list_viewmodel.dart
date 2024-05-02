@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blog/_core/constants/http.dart';
-import 'package:flutter_blog/_core/constants/move.dart';
 import 'package:flutter_blog/data/dtos/paging_dto.dart';
 import 'package:flutter_blog/data/dtos/post_request.dart';
 import 'package:flutter_blog/data/dtos/response_dto.dart';
@@ -9,7 +7,6 @@ import 'package:flutter_blog/data/repositories/post_repository.dart';
 import 'package:flutter_blog/data/store/session_store.dart';
 import 'package:flutter_blog/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
 
 // 창고 데이터
 class PostListModel {
@@ -61,6 +58,16 @@ class PostListViewModel extends StateNotifier<PostListModel?> {
         SnackBar(content: Text("게시물 작성 실패 : ${responseDTO.errorMessage}")),
       );
     }
+  }
+
+  // 통신없이 상태 변경
+  void deletePost(int postId) {
+    PostListModel model = state!;
+    List<Post> prevPosts = model.posts;
+    PageDTO prevPage = model.page;
+
+    List<Post> newPosts = prevPosts.where((p) => p.id != postId).toList();
+    state = PostListModel(posts: newPosts, page: prevPage);
   }
 }
 

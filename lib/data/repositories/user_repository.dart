@@ -16,7 +16,6 @@ class UserRepository {
 
   Future<(ResponseDTO, String)> fetchLogin(LoginReqDTO loginReqDTO) async {
     final response = await dio.post("/login", data: loginReqDTO.toJson());
-
     ResponseDTO responseDTO = ResponseDTO.fromJson(response.data);
 
     if (responseDTO.success) {
@@ -25,7 +24,7 @@ class UserRepository {
 
       return (responseDTO, accessToken);
     } else {
-      return (responseDTO, "");
+      throw new Exception("${responseDTO.errorMessage}");
     }
   }
 }

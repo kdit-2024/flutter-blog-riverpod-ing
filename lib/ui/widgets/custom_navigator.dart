@@ -25,7 +25,7 @@ class CustomNavigation extends StatelessWidget {
                   return TextButton(
                     onPressed: () {
                       scaffoldKey.currentState!.openEndDrawer();
-                      Navigator.popAndPushNamed(context, Move.postWritePage);
+                      Navigator.pushNamed(context, Move.postWritePage);
                     },
                     child: const Text(
                       "글쓰기",

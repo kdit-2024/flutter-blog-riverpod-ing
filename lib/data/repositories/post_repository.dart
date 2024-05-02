@@ -8,6 +8,15 @@ import 'package:flutter_blog/ui/pages/post/list_page/post_list_viewmodel.dart';
 import 'package:logger/logger.dart';
 
 class PostRepository {
+  Future<ResponseDTO> deletePost(int postId, String accessToken) async {
+    var response = await dio.delete("/api/post/${postId}",
+        options: Options(headers: {"Authorization": "${accessToken}"}));
+
+    ResponseDTO responseDTO = ResponseDTO.fromJson(response.data);
+
+    return responseDTO;
+  }
+
   Future<ResponseDTO> savePost(
       PostSaveReqDTO reqDTO, String accessToken) async {
     Response response = await dio.post("/api/post",
