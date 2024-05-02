@@ -4,6 +4,7 @@ import 'package:flutter_blog/_core/constants/size.dart';
 import 'package:flutter_blog/_core/utils/validator_util.dart';
 import 'package:flutter_blog/data/dtos/user_request.dart';
 import 'package:flutter_blog/data/store/session_store.dart';
+import 'package:flutter_blog/ui/pages/auth/login_page/widgets/login_form_store.dart';
 import 'package:flutter_blog/ui/widgets/custom_auth_text_form_field.dart';
 import 'package:flutter_blog/ui/widgets/custom_elavated_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +18,7 @@ class LoginForm extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(loginFormProvider).setFormKey(_formKey);
     return Form(
       key: _formKey,
       child: Column(
@@ -26,6 +28,9 @@ class LoginForm extends ConsumerWidget {
             obscureText: false,
             funValidator: validateUsername(),
             controller: _username,
+            onChange: (value) {
+              ref.read(loginFormProvider).setUsername(value);
+            },
           ),
           const SizedBox(height: mediumGap),
           CustomAuthTextFormField(
@@ -33,26 +38,11 @@ class LoginForm extends ConsumerWidget {
             obscureText: true,
             funValidator: validatePassword(),
             controller: _password,
-          ),
-          const SizedBox(height: largeGap),
-          CustomElevatedButton(
-            text: "로그인",
-            funPageRoute: () {
-              bool isOk = _formKey.currentState!.validate();
-
-              if (isOk) {
-                String username = _username.text.trim();
-                String password = _password.text.trim();
-
-                LoginReqDTO loginReqDTO =
-                    LoginReqDTO(username: username, password: password);
-
-                SessionStore store = ref.read(sessionProvider);
-
-                store.login(loginReqDTO);
-              }
+            onChange: (value) {
+              ref.read(loginFormProvider).setPassword(value);
             },
           ),
+          const SizedBox(height: largeGap),
         ],
       ),
     );

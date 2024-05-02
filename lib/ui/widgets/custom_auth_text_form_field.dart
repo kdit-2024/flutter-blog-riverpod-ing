@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blog/_core/constants/size.dart';
+import 'package:flutter_blog/ui/pages/auth/login_page/widgets/login_form_store.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
 class CustomAuthTextFormField extends StatelessWidget {
   final String text;
   final bool obscureText;
   final funValidator;
   final TextEditingController controller;
+  final onChange;
 
   const CustomAuthTextFormField({
     Key? key,
@@ -13,6 +17,7 @@ class CustomAuthTextFormField extends StatelessWidget {
     this.obscureText = false,
     required this.funValidator,
     required this.controller,
+    this.onChange,
   }) : super(key: key);
 
   @override
@@ -23,6 +28,7 @@ class CustomAuthTextFormField extends StatelessWidget {
         Text(text),
         const SizedBox(height: smallGap),
         TextFormField(
+          onChanged: onChange,
           controller: controller,
           validator: funValidator,
           obscureText: obscureText,
