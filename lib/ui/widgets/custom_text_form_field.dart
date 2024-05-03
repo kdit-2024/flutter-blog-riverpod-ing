@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final String hint;
@@ -22,6 +23,9 @@ class CustomTextFormField extends StatelessWidget {
       controller.text = initValue!;
     }
     return TextFormField(
+      onChanged: (value) {
+        Logger().d("적은 글 : ${value}");
+      },
       controller: controller,
       validator: funValidator,
       obscureText: obscureText,

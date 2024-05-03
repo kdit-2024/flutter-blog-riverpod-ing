@@ -20,6 +20,8 @@ class PostDetailBody extends ConsumerWidget {
     PostDetailModel? model = ref.watch(postDetailProvider(postId));
     int sessionUserId = ref.read(sessionProvider).user!.id;
 
+    ref.read(sessionProvider).selectedPostId = postId;
+
     if (model == null) {
       return Center(child: CircularProgressIndicator());
     } else {

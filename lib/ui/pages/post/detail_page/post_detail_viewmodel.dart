@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blog/data/dtos/post_request.dart';
 import 'package:flutter_blog/data/dtos/response_dto.dart';
 import 'package:flutter_blog/data/models/post.dart';
 import 'package:flutter_blog/data/repositories/post_repository.dart';
@@ -18,6 +19,26 @@ class PostDetailViewModel extends StateNotifier<PostDetailModel?> {
   final mContext = navigatorKey.currentContext;
   Ref ref;
   PostDetailViewModel(super.state, this.ref);
+
+  Future<void> notifyUpdate(int postId, PostUpdateReqDTO reqDTO) async {
+    SessionStore sessionStore = ref.read(sessionProvider);
+
+    ResponseDTO responseDTO = await PostRepository()
+        .updatePost(postId, reqDTO, sessionStore.accessToken!);
+
+    if (responseDTO.success) {
+      // 상태 두군데 변경
+      state = PostDetailModel(responseDTO.response);
+      await ref
+          .read(postListProvider.notifier)
+          .updatePost(responseDTO.response);
+      Navigator.pop(mContext!);
+    } else {
+      ScaffoldMessenger.of(mContext!).showSnackBar(
+        SnackBar(content: Text("게시물 수정 실패 : ${responseDTO.errorMessage}")),
+      );
+    }
+  }
 
   Future<void> notifyDelete(int postId) async {
     SessionStore sessionStore = ref.read(sessionProvider);

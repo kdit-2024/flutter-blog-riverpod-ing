@@ -4,10 +4,25 @@ import 'package:flutter_blog/data/dtos/paging_dto.dart';
 import 'package:flutter_blog/data/dtos/post_request.dart';
 import 'package:flutter_blog/data/dtos/response_dto.dart';
 import 'package:flutter_blog/data/models/post.dart';
+import 'package:flutter_blog/data/store/session_store.dart';
 import 'package:flutter_blog/ui/pages/post/list_page/post_list_viewmodel.dart';
 import 'package:logger/logger.dart';
 
 class PostRepository {
+  Future<ResponseDTO> updatePost(
+      int postId, PostUpdateReqDTO postUpdateReqDTO, String accessToken) async {
+    var response = await dio.put("/api/post/${postId}",
+        data: postUpdateReqDTO.toJson(),
+        options: Options(headers: {"Authorization": "${accessToken}"}));
+
+    ResponseDTO responseDTO = ResponseDTO.fromJson(response.data);
+    if (responseDTO.success) {
+      responseDTO.response = Post.fromJson(responseDTO.response);
+    }
+
+    return responseDTO;
+  }
+
   Future<ResponseDTO> deletePost(int postId, String accessToken) async {
     var response = await dio.delete("/api/post/${postId}",
         options: Options(headers: {"Authorization": "${accessToken}"}));

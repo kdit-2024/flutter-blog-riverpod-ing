@@ -69,6 +69,32 @@ class PostListViewModel extends StateNotifier<PostListModel?> {
     List<Post> newPosts = prevPosts.where((p) => p.id != postId).toList();
     state = PostListModel(posts: newPosts, page: prevPage);
   }
+
+  Future<void> updatePost(Post post) async {
+    // 1. 기존 값 가지고 오기
+    PostListModel model = state!;
+
+    // 2. 부분 업데이트
+    PageDTO prevPage = model.page;
+    List<Post> prevPosts = model.posts;
+
+    // 자바 ()->{}, 자바스크립트 ()=>{}, 다트 (){}
+    List<Post> newPosts = prevPosts.map((p) {
+      if (p.id == post.id) {
+        return post;
+      } else {
+        return p;
+      }
+    }).toList();
+
+    await Future.delayed(
+        Duration(
+          seconds: 5,
+        ),
+        () => {});
+    state = PostListModel(page: prevPage, posts: newPosts);
+    // 통신코드
+  }
 }
 
 // 창고 관리자
