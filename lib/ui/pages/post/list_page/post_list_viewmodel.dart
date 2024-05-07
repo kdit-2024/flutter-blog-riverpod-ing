@@ -7,6 +7,8 @@ import 'package:flutter_blog/data/repositories/post_repository.dart';
 import 'package:flutter_blog/data/store/session_store.dart';
 import 'package:flutter_blog/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // 창고 데이터
 class PostListModel {
@@ -18,22 +20,38 @@ class PostListModel {
 
 // 창고
 class PostListViewModel extends StateNotifier<PostListModel?> {
+  // 1번 리플래시 컨트롤러 등록
+  final refreshCtrl = RefreshController();
   final mContext = navigatorKey.currentContext;
   final Ref ref;
   PostListViewModel(super.state, this.ref);
+
+  // 로드함수 (1, 2)
 
   Future<void> notifyInit(int page) async {
     SessionStore sessionStore = ref.read(sessionProvider);
     String jwt = sessionStore.accessToken!;
 
-    ResponseDTO responseDTO = await PostRepository().fetchPostList(jwt);
+    ResponseDTO responseDTO =
+        await PostRepository().fetchPostList(jwt, page: page);
 
     if (responseDTO.success) {
-      state = responseDTO.response;
+      PostListModel nextModel = responseDTO.response;
+
+      if (page > 0) {
+        PostListModel prevModel = state!;
+        nextModel.posts = [...prevModel.posts, ...nextModel.posts];
+
+        state = nextModel;
+      } else {
+        state = nextModel;
+      }
     } else {
       ScaffoldMessenger.of(mContext!).showSnackBar(
           SnackBar(content: Text("게시물 보기 실패 : ${responseDTO.errorMessage}")));
     }
+    // 2. 이벤트 종료시에 리플래시 종료 (최초 로드, 풀다운)
+    refreshCtrl.refreshCompleted();
   }
 
   Future<void> notifyAdd(PostSaveReqDTO reqDTO) async {
@@ -94,6 +112,21 @@ class PostListViewModel extends StateNotifier<PostListModel?> {
         () => {});
     state = PostListModel(page: prevPage, posts: newPosts);
     // 통신코드
+  }
+
+  Future<void> nextList() async {
+    PageDTO pageDTO = state!.page;
+
+    if (pageDTO.isLast) {
+      await Future.delayed(Duration(microseconds: 500));
+      refreshCtrl.loadComplete();
+
+      return;
+    }
+
+    Logger().d("다음페이지 로드 : ${pageDTO.pageNumber + 1}");
+    await notifyInit(pageDTO.pageNumber + 1);
+    refreshCtrl.loadComplete();
   }
 }
 

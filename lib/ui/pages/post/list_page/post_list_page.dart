@@ -18,13 +18,7 @@ class PostListPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text("Blog"),
       ),
-      body: RefreshIndicator(
-        key: refreshKey,
-        onRefresh: () async {
-          ref.read(postListProvider.notifier).notifyInit(0);
-        },
-        child: PostListBody(),
-      ),
+      body: PostListBody(),
     );
   }
 }
