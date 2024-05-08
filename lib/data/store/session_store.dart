@@ -24,6 +24,15 @@ class SessionStore extends SessionUser {
 
   SessionStore();
 
+  Future<void> logout() async {
+    super.user = null;
+    super.accessToken = null;
+    super.isLogin = false;
+
+    await secureStorage.delete(key: "accessToken");
+    Navigator.popAndPushNamed(mContext!, Move.loginPage);
+  }
+
   void loginCheck(String path) {
     if (isLogin) {
       Navigator.pushNamed(mContext!, path);
@@ -61,6 +70,29 @@ class SessionStore extends SessionUser {
     } else {
       ScaffoldMessenger.of(mContext!).showSnackBar(
           SnackBar(content: Text("로그인 실패 : ${responseDTO.errorMessage}")));
+    }
+  }
+
+  Future<void> autoLogin() async {
+    // secureStorage는 앱삭제시에 사라짐
+    String? accessToken = await secureStorage.read(key: "accessToken");
+
+    if (accessToken == null) {
+      Navigator.of(mContext!).pushNamed(Move.loginPage);
+    } else {
+      ResponseDTO responseDTO =
+          await UserRepository().fetchAutoLogin(accessToken);
+
+      if (responseDTO.success) {
+        super.user = responseDTO.response;
+        super.accessToken = accessToken;
+        super.isLogin = true;
+        Navigator.popAndPushNamed(mContext!, Move.postListPage);
+      } else {
+        ScaffoldMessenger.of(mContext!).showSnackBar(
+            SnackBar(content: Text("자동 로그인 실패 : ${responseDTO.errorMessage}")));
+        Navigator.popAndPushNamed(mContext!, Move.loginPage);
+      }
     }
   }
 }

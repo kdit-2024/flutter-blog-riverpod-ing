@@ -27,4 +27,19 @@ class UserRepository {
       throw new Exception("${responseDTO.errorMessage}");
     }
   }
+
+  Future<ResponseDTO> fetchAutoLogin(String accessToken) async {
+    Response response = await dio.post("/auto/login",
+        options: Options(headers: {"Authorization": "$accessToken"}));
+    Logger().d(response.data);
+
+    ResponseDTO responseDTO = ResponseDTO.fromJson(response.data);
+
+    if (responseDTO.success) {
+      responseDTO.response = User.fromJson(responseDTO.response);
+      return responseDTO;
+    }
+
+    return responseDTO;
+  }
 }
